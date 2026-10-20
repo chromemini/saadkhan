@@ -12,7 +12,8 @@ let state = {
   seniorSalary: 100000,
   salesPerDay: 2,
   yearlyMix: 0.20,
-  churnRate: 0.08
+  churnRate: 0.08,
+  selectedMonth: 1
 };
 
 const dom = {
@@ -31,18 +32,29 @@ const dom = {
   valChurnRate: document.getElementById('val-churn-rate'),
   hintMonthlyTotal: document.getElementById('hint-monthly-total'),
 
+  heroMonthTitle: document.getElementById('hero-month-title'),
   heroProfit: document.getElementById('hero-profit'),
+  heroUnit: document.getElementById('hero-unit'),
   heroSubtext: document.getElementById('hero-subtext'),
+
+  mathIn: document.getElementById('math-in'),
+  mathInSub: document.getElementById('math-in-sub'),
+  mathOut: document.getElementById('math-out'),
+  mathNet: document.getElementById('math-net'),
+  mathNetSub: document.getElementById('math-net-sub'),
+
   statBreakeven: document.getElementById('stat-breakeven'),
-  statMonthlyBurn: document.getElementById('stat-monthly-burn'),
-  statMonth12Profit: document.getElementById('stat-month12-profit'),
+  statActiveUsers: document.getElementById('stat-active-users'),
   statPayback: document.getElementById('stat-payback'),
+  statDrawdown: document.getElementById('stat-drawdown'),
+
   statusTag: document.getElementById('status-tag'),
   chartBadge: document.getElementById('chart-badge'),
 
   btnModelFixed: document.getElementById('btn-model-fixed'),
   btnModelHybrid: document.getElementById('btn-model-hybrid'),
   presetBtns: document.querySelectorAll('.preset-btn'),
+  monthChips: document.querySelectorAll('.month-chip'),
   chartCanvas: document.getElementById('projection-chart')
 };
 
@@ -110,6 +122,7 @@ function calculateEngine() {
     monthlyData.push({
       month: m,
       activeMonthlyUsers,
+      totalActiveUsers: activeMonthlyUsers + yearlyPlanSales,
       totalRevenue,
       netMonth,
       cumulativeCash
@@ -123,14 +136,13 @@ function calculateEngine() {
     yearlyPlanSales,
     paybackMonth,
     peakDrawdown: Math.abs(peakDrawdown),
-    monthlyData,
-    month12Profit: monthlyData[11].netMonth,
-    month24Profit: monthlyData[23].netMonth
+    monthlyData
   };
 }
 
 function renderUI() {
   const result = calculateEngine();
+  const currentMonthData = result.monthlyData[state.selectedMonth - 1];
 
   dom.valJuniorsCount.textContent = `${state.juniorsCount} reps`;
   dom.valJuniorSalary.textContent = state.model === 'hybrid' ? '15,000 + Bonus' : `${Number(state.juniorSalary).toLocaleString()} PKR`;
@@ -140,30 +152,44 @@ function renderUI() {
   dom.valChurnRate.textContent = `${Math.round(state.churnRate * 100)}%`;
   dom.hintMonthlyTotal.textContent = `Team brings ~${result.totalMonthlySales} new sales/mo (${result.yearlyPlanSales} yearly)`;
 
-  // Hero displays Monthly Profit
-  if (result.month24Profit >= 0) {
-    dom.heroProfit.textContent = `PKR ${formatPKR(result.month24Profit)}`;
-    dom.heroProfit.style.color = '#ffffff';
-    dom.heroSubtext.textContent = `Clear profit in your pocket every month at Month 24 (after paying all ${state.juniorsCount + 1} salaries). Minimum ${result.breakEvenMonthlySubs} users needed to start profiting.`;
+  // Hero Card updates for selected month
+  dom.heroMonthTitle.textContent = `Month ${state.selectedMonth} Cash In Pocket`;
+  const monthProfit = currentMonthData.netMonth;
+
+  if (monthProfit >= 0) {
+    dom.heroProfit.textContent = `+PKR ${formatPKR(monthProfit)}`;
+    dom.heroProfit.style.color = '#51cf66';
+    dom.heroUnit.textContent = `profit in Month ${state.selectedMonth}`;
+    dom.heroSubtext.textContent = `After paying all team salaries, you keep PKR ${formatPKR(monthProfit)} pure profit in Month ${state.selectedMonth}.`;
     dom.statusTag.textContent = 'Making Profit';
-    dom.chartBadge.textContent = `+PKR ${formatPKR(result.month24Profit)} / month`;
   } else {
-    dom.heroProfit.textContent = `-PKR ${formatPKR(Math.abs(result.month24Profit))}`;
+    dom.heroProfit.textContent = `-PKR ${formatPKR(Math.abs(monthProfit))}`;
     dom.heroProfit.style.color = '#ff6b6b';
-    dom.heroSubtext.textContent = `Currently losing money. You need at least ${result.breakEvenMonthlySubs} active subscribers just to pay team salaries.`;
-    dom.statusTag.textContent = 'Losing Money';
-    dom.chartBadge.textContent = 'Not Profitable Yet';
+    dom.heroUnit.textContent = `shortfall in Month ${state.selectedMonth}`;
+    dom.heroSubtext.textContent = `In Month ${state.selectedMonth}, team sales haven't covered the full salary yet. You need ${result.breakEvenMonthlySubs} subscribers to start profiting.`;
+    dom.statusTag.textContent = 'Ramping Up';
   }
 
-  dom.statBreakeven.textContent = `${result.breakEvenMonthlySubs.toLocaleString()} subs`;
-  dom.statMonthlyBurn.textContent = `PKR ${formatPKR(result.fixedBurn)}`;
-  dom.statMonth12Profit.textContent = `PKR ${formatPKR(result.month12Profit)} / mo`;
-  dom.statPayback.textContent = result.paybackMonth ? `Month ${result.paybackMonth}` : 'Month 1';
+  // 3-Box Formula
+  dom.mathIn.textContent = `+PKR ${formatPKR(currentMonthData.totalRevenue)}`;
+  dom.mathInSub.textContent = `from active subscribers`;
+  dom.mathOut.textContent = `-PKR ${formatPKR(result.fixedBurn)}`;
+  dom.mathNet.textContent = `${monthProfit >= 0 ? '+' : '-'}PKR ${formatPKR(Math.abs(monthProfit))}`;
+  dom.mathNet.style.color = monthProfit >= 0 ? '#51cf66' : '#ff6b6b';
+  dom.mathNetSub.textContent = monthProfit >= 0 ? 'Pure Profit' : 'Out of Pocket';
 
-  drawMonochromeChart(result.monthlyData);
+  // Supporting Stat Pills
+  dom.statBreakeven.textContent = `${result.breakEvenMonthlySubs.toLocaleString()} subs`;
+  dom.statActiveUsers.textContent = `${currentMonthData.totalActiveUsers.toLocaleString()} users`;
+  dom.statPayback.textContent = result.paybackMonth ? `Month ${result.paybackMonth}` : 'Month 1';
+  dom.statDrawdown.textContent = `PKR ${formatPKR(result.peakDrawdown)}`;
+
+  dom.chartBadge.textContent = `${monthProfit >= 0 ? '+' : '-'}PKR ${formatPKR(Math.abs(monthProfit))} in M${state.selectedMonth}`;
+
+  drawMonochromeChart(result.monthlyData, state.selectedMonth);
 }
 
-function drawMonochromeChart(data) {
+function drawMonochromeChart(data, activeMonth) {
   const canvas = dom.chartCanvas;
   const ctx = canvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
@@ -210,6 +236,7 @@ function drawMonochromeChart(data) {
   ctx.textAlign = 'right';
   ctx.fillText('0 PKR', padLeft - 8, zeroY + 3);
 
+  // Gradient fill
   ctx.beginPath();
   ctx.moveTo(getX(0), zeroY);
   data.forEach((d, i) => {
@@ -225,6 +252,7 @@ function drawMonochromeChart(data) {
   ctx.fillStyle = gradient;
   ctx.fill();
 
+  // Solid white curve
   ctx.beginPath();
   data.forEach((d, i) => {
     const x = getX(i);
@@ -236,16 +264,27 @@ function drawMonochromeChart(data) {
   ctx.lineWidth = 2.5;
   ctx.stroke();
 
-  [0, 5, 11, 17, 23].forEach(idx => {
+  // Milestone points and active selection ring
+  [0, 2, 5, 11, 23].forEach(idx => {
     const x = getX(idx);
     const y = getY(data[idx].cumulativeCash);
+    const isSelected = (idx + 1) === activeMonth;
 
-    ctx.fillStyle = '#ffffff';
+    if (isSelected) {
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(x, y, 8, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    ctx.fillStyle = isSelected ? '#51cf66' : '#ffffff';
     ctx.beginPath();
-    ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.arc(x, y, isSelected ? 5 : 3.5, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.fillStyle = '#8c93a4';
+    ctx.fillStyle = isSelected ? '#ffffff' : '#8c93a4';
+    ctx.font = isSelected ? 'bold 10px Plus Jakarta Sans' : '10px Plus Jakarta Sans';
     ctx.textAlign = 'center';
     ctx.fillText(`M${idx + 1}`, x, height - 10);
   });
@@ -291,6 +330,15 @@ function bindEvents() {
     dom.btnModelFixed.classList.remove('active');
     dom.juniorSalary.disabled = true;
     renderUI();
+  });
+
+  dom.monthChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      dom.monthChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      state.selectedMonth = Number(chip.dataset.month);
+      renderUI();
+    });
   });
 
   dom.presetBtns.forEach(btn => {
