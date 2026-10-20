@@ -3,111 +3,166 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZeroCommit — Simple Money Calculator</title>
+  <title>ZeroCommit — Revenue & Growth Engine</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="state-deficit">
+<body class="state-building">
   <div class="app-shell">
     <header class="top-nav">
       <div class="brand">
-        <span class="brand-pill">ZeroCommit</span>
-        <span class="sub-badge">Agency Money Calculator</span>
+        <div class="brand-pill">
+          <svg class="icon-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          ZeroCommit
+        </div>
+        <span class="sub-badge">Partner Growth Simulator</span>
       </div>
       <div class="model-switcher">
-        <button type="button" class="chip active" id="btn-model-fixed">Fixed Pay</button>
-        <button type="button" class="chip" id="btn-model-hybrid">Base Pay + Bonus</button>
+        <button type="button" class="chip active" id="btn-model-fixed">Standard Payroll</button>
+        <button type="button" class="chip" id="btn-model-hybrid">Base + Commission</button>
       </div>
     </header>
 
     <main class="grid-layout">
       <section class="panel control-panel">
         <div class="panel-header">
-          <h2>1. Change Your Numbers</h2>
-          <span class="pill-tag" id="status-tag">Losing Money</span>
+          <h2>
+            <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Growth Levers
+          </h2>
+          <span class="pill-tag" id="status-tag">Scaling Up</span>
         </div>
 
         <div class="control-group">
           <div class="label-row">
-            <label for="juniors-count">Number of Youngsters</label>
-            <span class="val-badge" id="val-juniors-count">4 people</span>
+            <span class="label-with-icon">
+              <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Young Promoters
+            </span>
+            <span class="val-badge" id="val-juniors-count">4 reps</span>
           </div>
           <input type="range" id="juniors-count" min="1" max="10" value="4" step="1">
         </div>
 
         <div class="control-group">
           <div class="label-row">
-            <label for="junior-salary">Each Youngster's Pay (Per Month)</label>
-            <span class="val-badge" id="val-junior-salary">25,000</span>
+            <span class="label-with-icon">
+              <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 12h12"/></svg>
+              Pay Per Youngster / Mo
+            </span>
+            <span class="val-badge" id="val-junior-salary">25,000 PKR</span>
           </div>
           <input type="range" id="junior-salary" min="10000" max="50000" value="25000" step="2500">
         </div>
 
         <div class="control-group">
           <div class="label-row">
-            <label for="senior-salary">Senior Person Pay (Per Month)</label>
-            <span class="val-badge" id="val-senior-salary">100,000</span>
+            <span class="label-with-icon">
+              <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              Senior Leader Pay / Mo
+            </span>
+            <span class="val-badge" id="val-senior-salary">100,000 PKR</span>
           </div>
           <input type="range" id="senior-salary" min="50000" max="250000" value="100000" step="5000">
         </div>
 
-        <div class="control-group">
+        <div class="control-group highlight-box">
           <div class="label-row">
-            <label for="sales-per-rep">New Sales Each Person Makes Per Month</label>
-            <span class="val-badge" id="val-sales-per-rep">25 sales</span>
+            <span class="label-with-icon">
+              <svg class="icon-inline highlight" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Daily Sales Per Person
+            </span>
+            <span class="val-badge highlight" id="val-sales-per-day">1.0 sale / day</span>
           </div>
-          <input type="range" id="sales-per-rep" min="5" max="80" value="25" step="1">
+          <input type="range" id="sales-per-day" min="0.2" max="4.0" value="1.0" step="0.1">
+          <div class="field-hint" id="hint-monthly-total">Total team output: ~120 new subscriptions every month</div>
         </div>
 
         <div class="control-group">
           <div class="label-row">
-            <label for="churn-rate">People Who Stop Paying Each Month</label>
-            <span class="val-badge" id="val-churn-rate">8% cancel</span>
+            <span class="label-with-icon">
+              <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6"/><path d="M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+              Monthly Drop-off (Cancellations)
+            </span>
+            <span class="val-badge" id="val-churn-rate">8%</span>
           </div>
-          <input type="range" id="churn-rate" min="0" max="25" value="8" step="1">
+          <input type="range" id="churn-rate" min="0" max="20" value="8" step="1">
         </div>
 
         <div class="presets-row">
-          <button type="button" class="preset-btn" data-preset="worst">Slow Sales</button>
-          <button type="button" class="preset-btn active" data-preset="base">Normal Sales</button>
-          <button type="button" class="preset-btn" data-preset="growth">Fast Sales</button>
+          <button type="button" class="preset-btn" data-preset="steady">
+            <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Steady (0.5/day)
+          </button>
+          <button type="button" class="preset-btn active" data-preset="target">
+            <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+            Target (1.0/day)
+          </button>
+          <button type="button" class="preset-btn" data-preset="scale">
+            <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            Scale (2.0/day)
+          </button>
         </div>
       </section>
 
       <section class="panel live-display">
         <div class="hero-metric-card">
-          <div class="card-caption">Paying Users Needed Just to Pay Salaries</div>
-          <div class="hero-number" id="hero-breakeven">667</div>
-          <div class="hero-subtext" id="hero-subtext">You need this many active users every month so your 300 PKR commission per user covers your total salaries.</div>
+          <div class="card-caption">
+            <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+            Self-Sustaining Milestone
+          </div>
+          <div class="hero-number-row">
+            <span class="hero-number" id="hero-breakeven">667</span>
+            <span class="hero-unit">active members</span>
+          </div>
+          <div class="hero-subtext" id="hero-subtext">At 667 retained subscriptions, your recurring 15% commission fully pays all 5 team salaries. Every extra user is pure profit.</div>
         </div>
 
         <div class="stats-pills-row">
           <div class="pill-stat">
-            <span class="caption">Total Monthly Salaries</span>
+            <div class="caption">
+              <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+              Total Team Payroll
+            </div>
             <span class="value" id="stat-monthly-burn">PKR 200,000</span>
           </div>
+
           <div class="pill-stat">
-            <span class="caption">Your Cut Per User</span>
-            <span class="value">PKR 300 / mo</span>
+            <div class="caption">
+              <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><line x1="12" y1="6" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="18"/></svg>
+              Partner Cut
+            </div>
+            <span class="value">PKR 300 / sub / mo</span>
           </div>
+
           <div class="pill-stat">
-            <span class="caption">Months to Get Money Back</span>
-            <span class="value" id="stat-payback">Month 10</span>
+            <div class="caption">
+              <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+              Profitable From
+            </div>
+            <span class="value" id="stat-payback">Month 8</span>
           </div>
+
           <div class="pill-stat">
-            <span class="caption">Max Cash Spent Out of Pocket</span>
-            <span class="value" id="stat-drawdown">-PKR 12 Lakh</span>
+            <div class="caption">
+              <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/></svg>
+              Startup Runway Needed
+            </div>
+            <span class="value" id="stat-drawdown">PKR 8.5 Lakh</span>
           </div>
         </div>
 
         <div class="chart-container">
           <div class="chart-header">
-            <h3>Total Profit or Loss Over 2 Years</h3>
-            <span class="legend-badge">Red = Loss | Green = Profit</span>
+            <h3>
+              <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+              Net Profit Growth (24-Month Roadmap)
+            </h3>
+            <span class="legend-badge" id="chart-badge">High Upside</span>
           </div>
-          <canvas id="projection-chart" width="800" height="320"></canvas>
+          <canvas id="projection-chart" width="800" height="300"></canvas>
         </div>
       </section>
     </main>
