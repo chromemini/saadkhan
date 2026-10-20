@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZeroCommit — Authorized Partner Financial Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="state-deficit">
+  <div class="app-shell">
+    <header class="top-nav">
+      <div class="brand">
+        <span class="brand-pill">ZeroCommit</span>
+        <span class="sub-badge">Partner ROI Deck</span>
+      </div>
+      <div class="model-switcher">
+        <button type="button" class="chip active" id="btn-model-fixed">Fixed Payroll</button>
+        <button type="button" class="chip" id="btn-model-hybrid">Hybrid Incentive</button>
+      </div>
+    </header>
+
+    <main class="grid-layout">
+      <section class="panel control-panel">
+        <div class="panel-header">
+          <h2>Parameters</h2>
+          <span class="pill-tag" id="status-tag">High Burn</span>
+        </div>
+
+        <div class="control-group">
+          <div class="label-row">
+            <label for="juniors-count">Junior Promoters</label>
+            <span class="val-badge" id="val-juniors-count">4 reps</span>
+          </div>
+          <input type="range" id="juniors-count" min="1" max="10" value="4" step="1">
+        </div>
+
+        <div class="control-group">
+          <div class="label-row">
+            <label for="junior-salary">Junior Pay (PKR / mo)</label>
+            <span class="val-badge" id="val-junior-salary">25,000</span>
+          </div>
+          <input type="range" id="junior-salary" min="10000" max="50000" value="25000" step="2500">
+        </div>
+
+        <div class="control-group">
+          <div class="label-row">
+            <label for="senior-salary">Senior Lead (PKR / mo)</label>
+            <span class="val-badge" id="val-senior-salary">100,000</span>
+          </div>
+          <input type="range" id="senior-salary" min="50000" max="250000" value="100000" step="5000">
+        </div>
+
+        <div class="control-group">
+          <div class="label-row">
+            <label for="sales-per-rep">Conversions / Rep / Mo</label>
+            <span class="val-badge" id="val-sales-per-rep">25 subs</span>
+          </div>
+          <input type="range" id="sales-per-rep" min="5" max="80" value="25" step="1">
+        </div>
+
+        <div class="control-group">
+          <div class="label-row">
+            <label for="churn-rate">Monthly Churn (%)</label>
+            <span class="val-badge" id="val-churn-rate">8%</span>
+          </div>
+          <input type="range" id="churn-rate" min="0" max="25" value="8" step="1">
+        </div>
+
+        <div class="presets-row">
+          <button type="button" class="preset-btn" data-preset="worst">Survival</button>
+          <button type="button" class="preset-btn active" data-preset="base">Baseline</button>
+          <button type="button" class="preset-btn" data-preset="growth">Hyper</button>
+        </div>
+      </section>
+
+      <section class="panel live-display">
+        <div class="hero-metric-card">
+          <div class="card-caption">Break-Even Threshold</div>
+          <div class="hero-number" id="hero-breakeven">667</div>
+          <div class="hero-subtext" id="hero-subtext">Active paying subscribers needed to cover monthly team burn</div>
+        </div>
+
+        <div class="stats-pills-row">
+          <div class="pill-stat">
+            <span class="caption">Monthly Burn</span>
+            <span class="value" id="stat-monthly-burn">PKR 200,000</span>
+          </div>
+          <div class="pill-stat">
+            <span class="caption">Cut / Sub</span>
+            <span class="value">PKR 300 (15%)</span>
+          </div>
+          <div class="pill-stat">
+            <span class="caption">Payback Period</span>
+            <span class="value" id="stat-payback">Month 10</span>
+          </div>
+          <div class="pill-stat">
+            <span class="caption">Peak Capital Risk</span>
+            <span class="value" id="stat-drawdown">-PKR 1.2M</span>
+          </div>
+        </div>
+
+        <div class="chart-container">
+          <div class="chart-header">
+            <h3>24-Month Trajectory (Cumulative Cash Flow)</h3>
+            <span class="legend-badge">J-Curve</span>
+          </div>
+          <canvas id="projection-chart" width="800" height="320"></canvas>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
