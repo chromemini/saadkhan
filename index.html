@@ -17,11 +17,11 @@
           <svg class="icon-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
           ZeroCommit
         </div>
-        <span class="sub-badge">Partner Growth Simulator</span>
+        <span class="sub-badge">Partner Calculator</span>
       </div>
       <div class="model-switcher">
-        <button type="button" class="chip active" id="btn-model-fixed">Standard Payroll</button>
-        <button type="button" class="chip" id="btn-model-hybrid">Base + Commission</button>
+        <button type="button" class="chip active" id="btn-model-fixed">Fixed Salary</button>
+        <button type="button" class="chip" id="btn-model-hybrid">Low Salary + Bonus</button>
       </div>
     </header>
 
@@ -30,9 +30,9 @@
         <div class="panel-header">
           <h2>
             <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            Growth Levers
+            Change Numbers
           </h2>
-          <span class="pill-tag" id="status-tag">Scaling Up</span>
+          <span class="pill-tag" id="status-tag">Making Profit</span>
         </div>
 
         <div class="control-group">
@@ -68,16 +68,16 @@
           <input type="range" id="senior-salary" min="50000" max="250000" value="100000" step="5000">
         </div>
 
-        <div class="control-group highlight-box">
+        <div class="control-group">
           <div class="label-row">
             <span class="label-with-icon">
-              <svg class="icon-inline highlight" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              Daily Sales Per Person (1 to 70)
+              <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Daily Sales Per Person
             </span>
-            <span class="val-badge highlight" id="val-sales-per-day">2 sales / day</span>
+            <span class="val-badge" id="val-sales-per-day">2/day</span>
           </div>
           <input type="range" id="sales-per-day" min="1" max="70" value="2" step="1">
-          <div class="field-hint" id="hint-monthly-total">Total team output: ~240 new sales every month</div>
+          <div class="field-hint" id="hint-monthly-total">Team brings ~240 new sales every month</div>
         </div>
 
         <div class="control-group">
@@ -106,15 +106,15 @@
         <div class="presets-row">
           <button type="button" class="preset-btn" data-preset="steady">
             <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            Starter (1/day)
+            Slow (1/day)
           </button>
           <button type="button" class="preset-btn active" data-preset="target">
             <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
-            Active (5/day)
+            Normal (5/day)
           </button>
           <button type="button" class="preset-btn" data-preset="scale">
             <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-            High Volume (25/day)
+            Fast (25/day)
           </button>
         </div>
       </section>
@@ -122,31 +122,39 @@
       <section class="panel live-display">
         <div class="hero-metric-card">
           <div class="card-caption">
-            <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-            Monthly Break-Even Target
+            <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><line x1="12" y1="6" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="18"/></svg>
+            Your Monthly Take-Home Profit
           </div>
           <div class="hero-number-row">
-            <span class="hero-number" id="hero-breakeven">667</span>
-            <span class="hero-unit">equivalent monthly subs</span>
+            <span class="hero-number" id="hero-profit">PKR 1.3 Crore</span>
+            <span class="hero-unit">/ month</span>
           </div>
-          <div class="hero-subtext" id="hero-subtext">Each monthly subscriber pays PKR 300/mo. Each yearly subscriber gives you PKR 3,000 upfront cash immediately.</div>
+          <div class="hero-subtext" id="hero-subtext">Clear profit in your pocket every month after paying all 5 team salaries.</div>
         </div>
 
         <div class="stats-pills-row">
           <div class="pill-stat">
             <div class="caption">
+              <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+              Users to Pay Salaries
+            </div>
+            <span class="value" id="stat-breakeven">667 subs</span>
+          </div>
+
+          <div class="pill-stat">
+            <div class="caption">
               <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-              Team Monthly Payroll
+              Team Monthly Salaries
             </div>
             <span class="value" id="stat-monthly-burn">PKR 200,000</span>
           </div>
 
           <div class="pill-stat">
             <div class="caption">
-              <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><line x1="12" y1="6" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="18"/></svg>
-              Commission Rate
+              <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+              Month 12 Profit
             </div>
-            <span class="value">15% Recurring</span>
+            <span class="value" id="stat-month12-profit">PKR 54 Lakh / mo</span>
           </div>
 
           <div class="pill-stat">
@@ -154,15 +162,7 @@
               <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
               Profitable From
             </div>
-            <span class="value" id="stat-payback">Month 4</span>
-          </div>
-
-          <div class="pill-stat">
-            <div class="caption">
-              <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/></svg>
-              Max Capital Invested
-            </div>
-            <span class="value" id="stat-drawdown">PKR 4.2 Lakh</span>
+            <span class="value" id="stat-payback">Month 1</span>
           </div>
         </div>
 
@@ -170,11 +170,11 @@
           <div class="chart-header">
             <h3>
               <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-              Cumulative Net Profit (24 Months)
+              Total Profit Growth (2 Years)
             </h3>
-            <span class="legend-badge" id="chart-badge">Strong Cash Flow</span>
+            <span class="legend-badge" id="chart-badge">+PKR 0 / month</span>
           </div>
-          <canvas id="projection-chart" width="800" height="300"></canvas>
+          <canvas id="projection-chart" width="800" height="280"></canvas>
         </div>
       </section>
     </main>

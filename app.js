@@ -31,11 +31,12 @@ const dom = {
   valChurnRate: document.getElementById('val-churn-rate'),
   hintMonthlyTotal: document.getElementById('hint-monthly-total'),
 
-  heroBreakeven: document.getElementById('hero-breakeven'),
+  heroProfit: document.getElementById('hero-profit'),
   heroSubtext: document.getElementById('hero-subtext'),
+  statBreakeven: document.getElementById('stat-breakeven'),
   statMonthlyBurn: document.getElementById('stat-monthly-burn'),
+  statMonth12Profit: document.getElementById('stat-month12-profit'),
   statPayback: document.getElementById('stat-payback'),
-  statDrawdown: document.getElementById('stat-drawdown'),
   statusTag: document.getElementById('status-tag'),
   chartBadge: document.getElementById('chart-badge'),
 
@@ -48,9 +49,17 @@ const dom = {
 function formatPKR(val) {
   const rounded = Math.round(val);
   const abs = Math.abs(rounded);
-  if (abs >= 10000000) return (abs / 10000000).toFixed(1) + ' Crore';
-  if (abs >= 100000) return (abs / 100000).toFixed(1) + ' Lakh';
-  return abs.toLocaleString();
+  let formatted = '';
+
+  if (abs >= 10000000) {
+    formatted = (abs / 10000000).toFixed(1) + ' Crore';
+  } else if (abs >= 100000) {
+    formatted = (abs / 100000).toFixed(1) + ' Lakh';
+  } else {
+    formatted = abs.toLocaleString();
+  }
+
+  return rounded < 0 ? `-${formatted}` : formatted;
 }
 
 function calculateEngine() {
@@ -58,7 +67,6 @@ function calculateEngine() {
   const effectiveJuniorBase = isHybrid ? 15000 : state.juniorSalary;
   const fixedBurn = (state.juniorsCount * effectiveJuniorBase) + state.seniorSalary;
 
-  // In hybrid, agency shares 25% of commission with the youngsters
   const netMonthlyComm = isHybrid ? (MONTHLY_COMM - 75) : MONTHLY_COMM;
   const netYearlyComm = isHybrid ? (YEARLY_COMM - 750) : YEARLY_COMM;
 
@@ -66,7 +74,6 @@ function calculateEngine() {
   const monthlyPlanSales = Math.round(totalMonthlySales * (1 - state.yearlyMix));
   const yearlyPlanSales = totalMonthlySales - monthlyPlanSales;
 
-  // Break-even in equivalent monthly subs
   const breakEvenMonthlySubs = Math.ceil(fixedBurn / netMonthlyComm);
 
   let activeMonthlyUsers = 0;
@@ -77,16 +84,13 @@ function calculateEngine() {
   const monthlyData = [];
 
   for (let m = 1; m <= 24; m++) {
-    // 1. Monthly Users Flow
     const monthlyChurnLoss = Math.round(activeMonthlyUsers * state.churnRate);
     activeMonthlyUsers = Math.max(0, activeMonthlyUsers + monthlyPlanSales - monthlyChurnLoss);
     const revenueFromMonthly = activeMonthlyUsers * netMonthlyComm;
 
-    // 2. Yearly Users Flow (Immediate 3,000 PKR cash per yearly sub)
     yearlyCohorts[m] = yearlyPlanSales;
     let renewingYearly = 0;
     if (m >= 13) {
-      // Annual renewals after 12 months (approx 20% annual churn)
       renewingYearly = Math.round(yearlyCohorts[m - 12] * 0.80);
     }
     const revenueFromYearly = (yearlyPlanSales + renewingYearly) * netYearlyComm;
@@ -120,6 +124,7 @@ function calculateEngine() {
     paybackMonth,
     peakDrawdown: Math.abs(peakDrawdown),
     monthlyData,
+    month12Profit: monthlyData[11].netMonth,
     month24Profit: monthlyData[23].netMonth
   };
 }
@@ -130,25 +135,30 @@ function renderUI() {
   dom.valJuniorsCount.textContent = `${state.juniorsCount} reps`;
   dom.valJuniorSalary.textContent = state.model === 'hybrid' ? '15,000 + Bonus' : `${Number(state.juniorSalary).toLocaleString()} PKR`;
   dom.valSeniorSalary.textContent = `${Number(state.seniorSalary).toLocaleString()} PKR`;
-  dom.valSalesPerDay.textContent = `${state.salesPerDay} sales / day`;
+  dom.valSalesPerDay.textContent = `${state.salesPerDay}/day`;
   dom.valYearlyMix.textContent = `${Math.round(state.yearlyMix * 100)}% Yearly`;
   dom.valChurnRate.textContent = `${Math.round(state.churnRate * 100)}%`;
-  dom.hintMonthlyTotal.textContent = `Team brings ~${result.totalMonthlySales} new sales/mo (${result.yearlyPlanSales} yearly plans)`;
+  dom.hintMonthlyTotal.textContent = `Team brings ~${result.totalMonthlySales} new sales/mo (${result.yearlyPlanSales} yearly)`;
 
-  dom.heroBreakeven.textContent = result.breakEvenMonthlySubs.toLocaleString();
-  dom.statMonthlyBurn.textContent = `PKR ${formatPKR(result.fixedBurn)}`;
-  dom.statDrawdown.textContent = `PKR ${formatPKR(result.peakDrawdown)}`;
-  dom.statPayback.textContent = result.paybackMonth ? `Month ${result.paybackMonth}` : 'Month 1';
-
-  if (result.month24Profit > 0) {
-    dom.statusTag.textContent = 'High Compounding';
-    dom.chartBadge.textContent = `+PKR ${formatPKR(result.month24Profit)} / mo recurring`;
-    dom.heroSubtext.textContent = `With ${Math.round(state.yearlyMix * 100)}% choosing the 20k yearly plan, you collect PKR 3,000 instantly on each annual sale. Month 24 run-rate hits PKR ${formatPKR(result.month24Profit)}/month profit.`;
+  // Hero displays Monthly Profit
+  if (result.month24Profit >= 0) {
+    dom.heroProfit.textContent = `PKR ${formatPKR(result.month24Profit)}`;
+    dom.heroProfit.style.color = '#ffffff';
+    dom.heroSubtext.textContent = `Clear profit in your pocket every month at Month 24 (after paying all ${state.juniorsCount + 1} salaries). Minimum ${result.breakEvenMonthlySubs} users needed to start profiting.`;
+    dom.statusTag.textContent = 'Making Profit';
+    dom.chartBadge.textContent = `+PKR ${formatPKR(result.month24Profit)} / month`;
   } else {
-    dom.statusTag.textContent = 'Ramp Up Needed';
-    dom.chartBadge.textContent = 'Subsidized';
-    dom.heroSubtext.textContent = `Increase sales pace or yearly ratio to achieve break-even faster.`;
+    dom.heroProfit.textContent = `-PKR ${formatPKR(Math.abs(result.month24Profit))}`;
+    dom.heroProfit.style.color = '#ff6b6b';
+    dom.heroSubtext.textContent = `Currently losing money. You need at least ${result.breakEvenMonthlySubs} active subscribers just to pay team salaries.`;
+    dom.statusTag.textContent = 'Losing Money';
+    dom.chartBadge.textContent = 'Not Profitable Yet';
   }
+
+  dom.statBreakeven.textContent = `${result.breakEvenMonthlySubs.toLocaleString()} subs`;
+  dom.statMonthlyBurn.textContent = `PKR ${formatPKR(result.fixedBurn)}`;
+  dom.statMonth12Profit.textContent = `PKR ${formatPKR(result.month12Profit)} / mo`;
+  dom.statPayback.textContent = result.paybackMonth ? `Month ${result.paybackMonth}` : 'Month 1';
 
   drawMonochromeChart(result.monthlyData);
 }
@@ -200,7 +210,6 @@ function drawMonochromeChart(data) {
   ctx.textAlign = 'right';
   ctx.fillText('0 PKR', padLeft - 8, zeroY + 3);
 
-  // Gradient fill
   ctx.beginPath();
   ctx.moveTo(getX(0), zeroY);
   data.forEach((d, i) => {
@@ -216,7 +225,6 @@ function drawMonochromeChart(data) {
   ctx.fillStyle = gradient;
   ctx.fill();
 
-  // Solid white curve
   ctx.beginPath();
   data.forEach((d, i) => {
     const x = getX(i);
@@ -228,7 +236,6 @@ function drawMonochromeChart(data) {
   ctx.lineWidth = 2.5;
   ctx.stroke();
 
-  // Milestone points
   [0, 5, 11, 17, 23].forEach(idx => {
     const x = getX(idx);
     const y = getY(data[idx].cumulativeCash);
