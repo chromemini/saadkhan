@@ -1,23 +1,24 @@
 :root {
   --font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  --bg-canvas: #090a0d;
-  --surface-tonal: #12141a;
-  --surface-raised: #181b23;
-  --surface-container-high: #242834;
-  --border-subtle: #202430;
-  --border-strong: #323746;
+  --bg-canvas: #07080a;
+  --surface-tonal: #0e1015;
+  --surface-raised: #141720;
+  --surface-container-high: #1c202d;
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --border-glow: rgba(255, 255, 255, 0.22);
 
   --text-primary: #ffffff;
-  --text-secondary: #8c93a4;
-  --text-muted: #5e6475;
+  --text-secondary: #8e95a5;
+  --text-muted: #575e70;
 
-  --color-profit: #51cf66;
-  --color-loss: #ff6b6b;
+  --color-profit: #4ade80;
+  --color-loss: #f87171;
 
-  --radius-sm: 10px;
-  --radius-md: 16px;
-  --radius-lg: 20px;
-  --radius-xl: 28px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 26px;
   --radius-pill: 9999px;
   --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -31,6 +32,9 @@
 body {
   font-family: var(--font-family);
   background-color: var(--bg-canvas);
+  background-image: 
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(120, 140, 180, 0.12), transparent),
+    radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.02), transparent);
   color: var(--text-primary);
   line-height: 1.5;
   min-height: 100vh;
@@ -58,73 +62,85 @@ body {
   flex-shrink: 0;
 }
 
-.icon-brand {
-  width: 18px;
-  height: 18px;
-  stroke: var(--bg-canvas);
-  flex-shrink: 0;
-}
-
+/* Premium Header with 1:1 Logo */
 .top-nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
   background: var(--surface-tonal);
-  padding: 12px 20px;
+  padding: 12px 24px;
   border-radius: var(--radius-pill);
   border: 1px solid var(--border-subtle);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
-.brand-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 800;
-  font-size: 1rem;
-  letter-spacing: -0.3px;
-  background: var(--text-primary);
-  color: var(--bg-canvas);
-  padding: 5px 14px;
-  border-radius: var(--radius-pill);
+.brand-logo {
+  width: 32px;
+  height: 32px;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  display: block;
+  border-radius: var(--radius-sm);
+  filter: drop-shadow(0 2px 6px rgba(255, 255, 255, 0.15));
 }
 
-.sub-badge {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.model-switcher {
+.brand-text-group {
   display: flex;
-  background: var(--bg-canvas);
-  padding: 4px;
-  border-radius: var(--radius-pill);
-  gap: 4px;
-  border: 1px solid var(--border-subtle);
+  flex-direction: column;
+  gap: 1px;
 }
 
-.chip {
-  background: transparent;
-  border: none;
-  color: var(--text-secondary);
-  font-family: inherit;
-  font-size: 0.82rem;
+.brand-title {
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: -0.3px;
+  color: var(--text-primary);
+}
+
+.brand-x {
+  color: var(--text-muted);
+  font-weight: 400;
+  margin: 0 2px;
+}
+
+.brand-badge {
+  font-size: 0.72rem;
   font-weight: 600;
-  padding: 7px 16px;
-  border-radius: var(--radius-pill);
-  cursor: pointer;
-  transition: var(--transition);
+  color: var(--text-secondary);
+  letter-spacing: 0.3px;
 }
 
-.chip.active {
-  background: var(--text-primary);
-  color: var(--bg-canvas);
+.nav-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  background-color: var(--text-primary);
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+}
+
+.nav-status-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .grid-layout {
@@ -147,6 +163,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
 }
 
 .panel-header {
@@ -184,6 +201,11 @@ body {
   padding: 12px 16px;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-subtle);
+  transition: var(--transition);
+}
+
+.control-group:hover {
+  border-color: var(--border-strong);
 }
 
 .label-row {
@@ -224,7 +246,7 @@ input[type="range"] {
   appearance: none;
   width: 100%;
   height: 6px;
-  background: var(--border-strong);
+  background: var(--surface-container-high);
   border-radius: var(--radius-pill);
   outline: none;
   margin: 6px 0 2px;
@@ -238,7 +260,8 @@ input[type="range"]::-webkit-slider-thumb {
   border-radius: 50%;
   background: var(--text-primary);
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+  border: 2px solid var(--bg-canvas);
   transition: transform 0.15s ease;
 }
 
@@ -286,7 +309,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
   justify-content: space-between;
   align-items: center;
   background: var(--surface-raised);
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border-subtle);
   padding: 8px 14px;
   border-radius: var(--radius-lg);
   gap: 12px;
@@ -309,7 +332,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .month-chip {
-  background: var(--bg-canvas);
+  background: var(--surface-container-high);
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
   font-family: inherit;
@@ -330,12 +353,13 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
 /* Hero Metric Card */
 .hero-metric-card {
-  background: var(--surface-raised);
+  background: linear-gradient(145deg, rgba(28, 32, 45, 0.7), rgba(20, 23, 32, 0.9));
   border: 1px solid var(--border-strong);
   padding: 22px 26px;
   border-radius: var(--radius-xl);
   display: flex;
   flex-direction: column;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
 }
 
 .card-caption {
@@ -376,13 +400,13 @@ input[type="range"]::-webkit-slider-thumb:hover {
   line-height: 1.4;
 }
 
-/* 5th-Fail 3-Box Math Breakdown */
+/* 3-Box Math Breakdown */
 .math-breakdown {
   display: grid;
   grid-template-columns: 1fr auto 1fr auto 1fr;
   align-items: center;
   background: var(--surface-raised);
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-xl);
   padding: 14px 18px;
   gap: 8px;
@@ -513,6 +537,6 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
 #projection-chart {
   width: 100%;
-  height: 240px;
+  height: 230px;
   display: block;
 }

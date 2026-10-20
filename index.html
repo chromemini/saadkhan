@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZeroCommit — Revenue & Growth Engine</title>
+  <title>ZeroCommit × Partner — Financial Engine</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -13,15 +13,15 @@
   <div class="app-shell">
     <header class="top-nav">
       <div class="brand">
-        <div class="brand-pill">
-          <svg class="icon-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-          ZeroCommit
+        <img src="https://worker.github-ji.pages.dev/zerocommit.svg" alt="ZeroCommit Logo" class="brand-logo" width="32" height="32">
+        <div class="brand-text-group">
+          <span class="brand-title">ZeroCommit <span class="brand-x">×</span> Partner</span>
+          <span class="brand-badge">Authorized Growth Engine</span>
         </div>
-        <span class="sub-badge">Partner Calculator</span>
       </div>
-      <div class="model-switcher">
-        <button type="button" class="chip active" id="btn-model-fixed">Fixed Salary</button>
-        <button type="button" class="chip" id="btn-model-hybrid">Low Salary + Bonus</button>
+      <div class="nav-status">
+        <span class="live-dot"></span>
+        <span class="nav-status-label">Partner Financial Model</span>
       </div>
     </header>
 
@@ -124,7 +124,7 @@
         <div class="month-selector-bar">
           <span class="selector-title">
             <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            Choose Month to View:
+            Select Projection Month:
           </span>
           <div class="month-chips">
             <button type="button" class="month-chip active" data-month="1">Month 1</button>
@@ -148,24 +148,24 @@
           <div class="hero-subtext" id="hero-subtext">Clear profit in your pocket after paying all team salaries.</div>
         </div>
 
-        <!-- 5th-Fail 3-Box Math Formula -->
+        <!-- 3-Box Math Formula -->
         <div class="math-breakdown">
           <div class="math-box">
             <span class="math-label">1. Money Earned</span>
             <span class="math-val" id="math-in">+PKR 0</span>
-            <span class="math-sub" id="math-in-sub">0 subs</span>
+            <span class="math-sub" id="math-in-sub">from commissions</span>
           </div>
           <div class="math-op">-</div>
           <div class="math-box">
             <span class="math-label">2. Team Salaries</span>
             <span class="math-val" id="math-out">-PKR 200,000</span>
-            <span class="math-sub">5 people</span>
+            <span class="math-sub" id="math-out-sub">5 team members</span>
           </div>
           <div class="math-op">=</div>
           <div class="math-box result-box" id="math-result-box">
             <span class="math-label">3. Your Pocket</span>
             <span class="math-val" id="math-net">PKR 0</span>
-            <span class="math-sub" id="math-net-sub">Net result</span>
+            <span class="math-sub" id="math-net-sub">Net profit</span>
           </div>
         </div>
 
@@ -213,7 +213,7 @@
             </h3>
             <span class="legend-badge" id="chart-badge">+PKR 0 / month</span>
           </div>
-          <canvas id="projection-chart" width="800" height="240"></canvas>
+          <canvas id="projection-chart" width="800" height="230"></canvas>
         </div>
       </section>
     </main>

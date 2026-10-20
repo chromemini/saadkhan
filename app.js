@@ -6,7 +6,6 @@ const MONTHLY_COMM = MONTHLY_PRICE * COMM_PERCENT; // 300 PKR
 const YEARLY_COMM = YEARLY_PRICE * COMM_PERCENT;   // 3000 PKR upfront
 
 let state = {
-  model: 'fixed',
   juniorsCount: 4,
   juniorSalary: 25000,
   seniorSalary: 100000,
@@ -40,6 +39,7 @@ const dom = {
   mathIn: document.getElementById('math-in'),
   mathInSub: document.getElementById('math-in-sub'),
   mathOut: document.getElementById('math-out'),
+  mathOutSub: document.getElementById('math-out-sub'),
   mathNet: document.getElementById('math-net'),
   mathNetSub: document.getElementById('math-net-sub'),
 
@@ -51,8 +51,6 @@ const dom = {
   statusTag: document.getElementById('status-tag'),
   chartBadge: document.getElementById('chart-badge'),
 
-  btnModelFixed: document.getElementById('btn-model-fixed'),
-  btnModelHybrid: document.getElementById('btn-model-hybrid'),
   presetBtns: document.querySelectorAll('.preset-btn'),
   monthChips: document.querySelectorAll('.month-chip'),
   chartCanvas: document.getElementById('projection-chart')
@@ -75,18 +73,12 @@ function formatPKR(val) {
 }
 
 function calculateEngine() {
-  const isHybrid = state.model === 'hybrid';
-  const effectiveJuniorBase = isHybrid ? 15000 : state.juniorSalary;
-  const fixedBurn = (state.juniorsCount * effectiveJuniorBase) + state.seniorSalary;
-
-  const netMonthlyComm = isHybrid ? (MONTHLY_COMM - 75) : MONTHLY_COMM;
-  const netYearlyComm = isHybrid ? (YEARLY_COMM - 750) : YEARLY_COMM;
+  const fixedBurn = (state.juniorsCount * state.juniorSalary) + state.seniorSalary;
+  const breakEvenMonthlySubs = Math.ceil(fixedBurn / MONTHLY_COMM);
 
   const totalMonthlySales = state.juniorsCount * Math.round(state.salesPerDay * 30);
   const monthlyPlanSales = Math.round(totalMonthlySales * (1 - state.yearlyMix));
   const yearlyPlanSales = totalMonthlySales - monthlyPlanSales;
-
-  const breakEvenMonthlySubs = Math.ceil(fixedBurn / netMonthlyComm);
 
   let activeMonthlyUsers = 0;
   let yearlyCohorts = new Array(25).fill(0);
@@ -98,14 +90,14 @@ function calculateEngine() {
   for (let m = 1; m <= 24; m++) {
     const monthlyChurnLoss = Math.round(activeMonthlyUsers * state.churnRate);
     activeMonthlyUsers = Math.max(0, activeMonthlyUsers + monthlyPlanSales - monthlyChurnLoss);
-    const revenueFromMonthly = activeMonthlyUsers * netMonthlyComm;
+    const revenueFromMonthly = activeMonthlyUsers * MONTHLY_COMM;
 
     yearlyCohorts[m] = yearlyPlanSales;
     let renewingYearly = 0;
     if (m >= 13) {
       renewingYearly = Math.round(yearlyCohorts[m - 12] * 0.80);
     }
-    const revenueFromYearly = (yearlyPlanSales + renewingYearly) * netYearlyComm;
+    const revenueFromYearly = (yearlyPlanSales + renewingYearly) * YEARLY_COMM;
 
     const totalRevenue = revenueFromMonthly + revenueFromYearly;
     const netMonth = totalRevenue - fixedBurn;
@@ -145,26 +137,26 @@ function renderUI() {
   const currentMonthData = result.monthlyData[state.selectedMonth - 1];
 
   dom.valJuniorsCount.textContent = `${state.juniorsCount} reps`;
-  dom.valJuniorSalary.textContent = state.model === 'hybrid' ? '15,000 + Bonus' : `${Number(state.juniorSalary).toLocaleString()} PKR`;
+  dom.valJuniorSalary.textContent = `${Number(state.juniorSalary).toLocaleString()} PKR`;
   dom.valSeniorSalary.textContent = `${Number(state.seniorSalary).toLocaleString()} PKR`;
   dom.valSalesPerDay.textContent = `${state.salesPerDay}/day`;
   dom.valYearlyMix.textContent = `${Math.round(state.yearlyMix * 100)}% Yearly`;
   dom.valChurnRate.textContent = `${Math.round(state.churnRate * 100)}%`;
-  dom.hintMonthlyTotal.textContent = `Team brings ~${result.totalMonthlySales} new sales/mo (${result.yearlyPlanSales} yearly)`;
+  dom.hintMonthlyTotal.textContent = `Team brings ~${result.totalMonthlySales} new sales/mo (${result.yearlyPlanSales} yearly plans)`;
 
-  // Hero Card updates for selected month
-  dom.heroMonthTitle.textContent = `Month ${state.selectedMonth} Cash In Pocket`;
+  // Hero Card
+  dom.heroMonthTitle.textContent = `Month ${state.selectedMonth} Net Cash In Pocket`;
   const monthProfit = currentMonthData.netMonth;
 
   if (monthProfit >= 0) {
     dom.heroProfit.textContent = `+PKR ${formatPKR(monthProfit)}`;
-    dom.heroProfit.style.color = '#51cf66';
+    dom.heroProfit.style.color = '#4ade80';
     dom.heroUnit.textContent = `profit in Month ${state.selectedMonth}`;
     dom.heroSubtext.textContent = `After paying all team salaries, you keep PKR ${formatPKR(monthProfit)} pure profit in Month ${state.selectedMonth}.`;
     dom.statusTag.textContent = 'Making Profit';
   } else {
     dom.heroProfit.textContent = `-PKR ${formatPKR(Math.abs(monthProfit))}`;
-    dom.heroProfit.style.color = '#ff6b6b';
+    dom.heroProfit.style.color = '#f87171';
     dom.heroUnit.textContent = `shortfall in Month ${state.selectedMonth}`;
     dom.heroSubtext.textContent = `In Month ${state.selectedMonth}, team sales haven't covered the full salary yet. You need ${result.breakEvenMonthlySubs} subscribers to start profiting.`;
     dom.statusTag.textContent = 'Ramping Up';
@@ -174,8 +166,9 @@ function renderUI() {
   dom.mathIn.textContent = `+PKR ${formatPKR(currentMonthData.totalRevenue)}`;
   dom.mathInSub.textContent = `from active subscribers`;
   dom.mathOut.textContent = `-PKR ${formatPKR(result.fixedBurn)}`;
+  dom.mathOutSub.textContent = `${state.juniorsCount + 1} team members`;
   dom.mathNet.textContent = `${monthProfit >= 0 ? '+' : '-'}PKR ${formatPKR(Math.abs(monthProfit))}`;
-  dom.mathNet.style.color = monthProfit >= 0 ? '#51cf66' : '#ff6b6b';
+  dom.mathNet.style.color = monthProfit >= 0 ? '#4ade80' : '#f87171';
   dom.mathNetSub.textContent = monthProfit >= 0 ? 'Pure Profit' : 'Out of Pocket';
 
   // Supporting Stat Pills
@@ -222,7 +215,7 @@ function drawMonochromeChart(data, activeMonth) {
   }
 
   const zeroY = getY(0);
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
   ctx.lineWidth = 1;
   ctx.setLineDash([3, 4]);
   ctx.beginPath();
@@ -278,7 +271,7 @@ function drawMonochromeChart(data, activeMonth) {
       ctx.stroke();
     }
 
-    ctx.fillStyle = isSelected ? '#51cf66' : '#ffffff';
+    ctx.fillStyle = isSelected ? '#4ade80' : '#ffffff';
     ctx.beginPath();
     ctx.arc(x, y, isSelected ? 5 : 3.5, 0, Math.PI * 2);
     ctx.fill();
@@ -313,22 +306,6 @@ function bindEvents() {
   });
   dom.churnRate.addEventListener('input', (e) => {
     state.churnRate = Number(e.target.value) / 100;
-    renderUI();
-  });
-
-  dom.btnModelFixed.addEventListener('click', () => {
-    state.model = 'fixed';
-    dom.btnModelFixed.classList.add('active');
-    dom.btnModelHybrid.classList.remove('active');
-    dom.juniorSalary.disabled = false;
-    renderUI();
-  });
-
-  dom.btnModelHybrid.addEventListener('click', () => {
-    state.model = 'hybrid';
-    dom.btnModelHybrid.classList.add('active');
-    dom.btnModelFixed.classList.remove('active');
-    dom.juniorSalary.disabled = true;
     renderUI();
   });
 
