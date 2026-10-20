@@ -3,7 +3,7 @@ const COMM_PERCENT = 0.15;
 const COMM_PER_SUB = SUB_PRICE * COMM_PERCENT; // 300 PKR
 
 let state = {
-  model: 'fixed', // 'fixed' | 'hybrid'
+  model: 'fixed',
   juniorsCount: 4,
   juniorSalary: 25000,
   seniorSalary: 100000,
@@ -39,13 +39,18 @@ const dom = {
 
 function formatPKR(val) {
   const rounded = Math.round(val);
-  if (Math.abs(rounded) >= 1000000) {
-    return (rounded / 1000000).toFixed(1) + 'M';
+  const abs = Math.abs(rounded);
+  let formatted = '';
+
+  if (abs >= 10000000) {
+    formatted = (abs / 10000000).toFixed(1) + ' Crore';
+  } else if (abs >= 100000) {
+    formatted = (abs / 100000).toFixed(1) + ' Lakh';
+  } else {
+    formatted = abs.toLocaleString();
   }
-  if (Math.abs(rounded) >= 100000) {
-    return (rounded / 100000).toFixed(1) + ' Lakh';
-  }
-  return rounded.toLocaleString();
+
+  return rounded < 0 ? `-${formatted}` : formatted;
 }
 
 function calculateEngine() {
@@ -53,7 +58,6 @@ function calculateEngine() {
   const effectiveJuniorBase = isHybrid ? 15000 : state.juniorSalary;
   const fixedBurn = (state.juniorsCount * effectiveJuniorBase) + state.seniorSalary;
 
-  // In hybrid, youngsters receive 75 PKR bounty per active subscriber, leaving 225 PKR net to agency
   const agencyCommissionPerSub = isHybrid ? (COMM_PER_SUB - 75) : COMM_PER_SUB;
   const breakEvenSubs = Math.ceil(fixedBurn / agencyCommissionPerSub);
 
@@ -102,25 +106,25 @@ function calculateEngine() {
 function renderUI() {
   const result = calculateEngine();
 
-  dom.valJuniorsCount.textContent = `${state.juniorsCount} reps`;
-  dom.valJuniorSalary.textContent = state.model === 'hybrid' ? '15,000 (Base)' : Number(state.juniorSalary).toLocaleString();
-  dom.valSeniorSalary.textContent = Number(state.seniorSalary).toLocaleString();
-  dom.valSalesPerRep.textContent = `${state.salesPerRep} subs`;
-  dom.valChurnRate.textContent = `${Math.round(state.churnRate * 100)}%`;
+  dom.valJuniorsCount.textContent = `${state.juniorsCount} people`;
+  dom.valJuniorSalary.textContent = state.model === 'hybrid' ? '15,000 + Bonus' : `${Number(state.juniorSalary).toLocaleString()} PKR`;
+  dom.valSeniorSalary.textContent = `${Number(state.seniorSalary).toLocaleString()} PKR`;
+  dom.valSalesPerRep.textContent = `${state.salesPerRep} sales`;
+  dom.valChurnRate.textContent = `${Math.round(state.churnRate * 100)}% cancel`;
 
   dom.heroBreakeven.textContent = result.breakEvenSubs.toLocaleString();
   dom.statMonthlyBurn.textContent = `PKR ${formatPKR(result.fixedBurn)}`;
   dom.statDrawdown.textContent = `PKR ${formatPKR(result.peakDrawdown)}`;
-  dom.statPayback.textContent = result.paybackMonth ? `Month ${result.paybackMonth}` : '24+ Mos';
+  dom.statPayback.textContent = result.paybackMonth ? `Month ${result.paybackMonth}` : 'Never in 2 Yrs';
 
   if (result.finalNet > 0) {
     document.body.className = 'state-profit';
-    dom.statusTag.textContent = 'High Upside';
-    dom.heroSubtext.textContent = `Break-even at ${result.breakEvenSubs} users. Month 24 net run-rate: +PKR ${formatPKR(result.finalNet)}/mo`;
+    dom.statusTag.textContent = 'Profitable';
+    dom.heroSubtext.textContent = `Once you reach ${result.breakEvenSubs} users, salaries are fully paid. In Month 24, you take home PKR ${formatPKR(result.finalNet)} pure profit every month.`;
   } else {
     document.body.className = 'state-deficit';
-    dom.statusTag.textContent = 'Cash Drain';
-    dom.heroSubtext.textContent = `Burn exceeds pace. At current churn and conversion, you will not achieve sustained ROI.`;
+    dom.statusTag.textContent = 'Losing Money';
+    dom.heroSubtext.textContent = `Your team is not making enough sales to pay their own salaries. You will keep losing money every month.`;
   }
 
   drawChart(result.monthlyData);
@@ -138,7 +142,7 @@ function drawChart(data) {
 
   const width = rect.width;
   const height = rect.height;
-  const padLeft = 60;
+  const padLeft = 70;
   const padRight = 20;
   const padTop = 30;
   const padBottom = 30;
@@ -158,9 +162,8 @@ function drawChart(data) {
     return padLeft + (i / (data.length - 1)) * (width - padLeft - padRight);
   }
 
-  // Draw zero line
   const zeroY = getY(0);
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
   ctx.lineWidth = 1;
   ctx.setLineDash([4, 4]);
   ctx.beginPath();
@@ -169,13 +172,11 @@ function drawChart(data) {
   ctx.stroke();
   ctx.setLineDash([]);
 
-  // Draw zero baseline text
   ctx.fillStyle = '#9aa2b5';
-  ctx.font = '10px Plus Jakarta Sans';
+  ctx.font = '11px Plus Jakarta Sans';
   ctx.textAlign = 'right';
-  ctx.fillText('0 PKR', padLeft - 8, zeroY + 3);
+  ctx.fillText('0 PKR (Even)', padLeft - 8, zeroY + 4);
 
-  // Draw Area under cumulative line
   ctx.beginPath();
   ctx.moveTo(getX(0), zeroY);
   data.forEach((d, i) => {
@@ -196,7 +197,6 @@ function drawChart(data) {
   ctx.fillStyle = gradient;
   ctx.fill();
 
-  // Draw Curve Line
   ctx.beginPath();
   data.forEach((d, i) => {
     const x = getX(i);
@@ -208,7 +208,6 @@ function drawChart(data) {
   ctx.lineWidth = 3;
   ctx.stroke();
 
-  // Draw dots and month labels
   [0, 5, 11, 17, 23].forEach(idx => {
     const x = getX(idx);
     const y = getY(data[idx].cumulativeCash);
@@ -219,7 +218,7 @@ function drawChart(data) {
 
     ctx.fillStyle = '#9aa2b5';
     ctx.textAlign = 'center';
-    ctx.fillText(`M${idx + 1}`, x, height - 10);
+    ctx.fillText(`Month ${idx + 1}`, x, height - 10);
   });
 }
 

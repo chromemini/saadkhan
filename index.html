@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZeroCommit — Authorized Partner Financial Engine</title>
+  <title>ZeroCommit — Simple Money Calculator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -14,32 +14,32 @@
     <header class="top-nav">
       <div class="brand">
         <span class="brand-pill">ZeroCommit</span>
-        <span class="sub-badge">Partner ROI Deck</span>
+        <span class="sub-badge">Agency Money Calculator</span>
       </div>
       <div class="model-switcher">
-        <button type="button" class="chip active" id="btn-model-fixed">Fixed Payroll</button>
-        <button type="button" class="chip" id="btn-model-hybrid">Hybrid Incentive</button>
+        <button type="button" class="chip active" id="btn-model-fixed">Fixed Pay</button>
+        <button type="button" class="chip" id="btn-model-hybrid">Base Pay + Bonus</button>
       </div>
     </header>
 
     <main class="grid-layout">
       <section class="panel control-panel">
         <div class="panel-header">
-          <h2>Parameters</h2>
-          <span class="pill-tag" id="status-tag">High Burn</span>
+          <h2>1. Change Your Numbers</h2>
+          <span class="pill-tag" id="status-tag">Losing Money</span>
         </div>
 
         <div class="control-group">
           <div class="label-row">
-            <label for="juniors-count">Junior Promoters</label>
-            <span class="val-badge" id="val-juniors-count">4 reps</span>
+            <label for="juniors-count">Number of Youngsters</label>
+            <span class="val-badge" id="val-juniors-count">4 people</span>
           </div>
           <input type="range" id="juniors-count" min="1" max="10" value="4" step="1">
         </div>
 
         <div class="control-group">
           <div class="label-row">
-            <label for="junior-salary">Junior Pay (PKR / mo)</label>
+            <label for="junior-salary">Each Youngster's Pay (Per Month)</label>
             <span class="val-badge" id="val-junior-salary">25,000</span>
           </div>
           <input type="range" id="junior-salary" min="10000" max="50000" value="25000" step="2500">
@@ -47,7 +47,7 @@
 
         <div class="control-group">
           <div class="label-row">
-            <label for="senior-salary">Senior Lead (PKR / mo)</label>
+            <label for="senior-salary">Senior Person Pay (Per Month)</label>
             <span class="val-badge" id="val-senior-salary">100,000</span>
           </div>
           <input type="range" id="senior-salary" min="50000" max="250000" value="100000" step="5000">
@@ -55,57 +55,57 @@
 
         <div class="control-group">
           <div class="label-row">
-            <label for="sales-per-rep">Conversions / Rep / Mo</label>
-            <span class="val-badge" id="val-sales-per-rep">25 subs</span>
+            <label for="sales-per-rep">New Sales Each Person Makes Per Month</label>
+            <span class="val-badge" id="val-sales-per-rep">25 sales</span>
           </div>
           <input type="range" id="sales-per-rep" min="5" max="80" value="25" step="1">
         </div>
 
         <div class="control-group">
           <div class="label-row">
-            <label for="churn-rate">Monthly Churn (%)</label>
-            <span class="val-badge" id="val-churn-rate">8%</span>
+            <label for="churn-rate">People Who Stop Paying Each Month</label>
+            <span class="val-badge" id="val-churn-rate">8% cancel</span>
           </div>
           <input type="range" id="churn-rate" min="0" max="25" value="8" step="1">
         </div>
 
         <div class="presets-row">
-          <button type="button" class="preset-btn" data-preset="worst">Survival</button>
-          <button type="button" class="preset-btn active" data-preset="base">Baseline</button>
-          <button type="button" class="preset-btn" data-preset="growth">Hyper</button>
+          <button type="button" class="preset-btn" data-preset="worst">Slow Sales</button>
+          <button type="button" class="preset-btn active" data-preset="base">Normal Sales</button>
+          <button type="button" class="preset-btn" data-preset="growth">Fast Sales</button>
         </div>
       </section>
 
       <section class="panel live-display">
         <div class="hero-metric-card">
-          <div class="card-caption">Break-Even Threshold</div>
+          <div class="card-caption">Paying Users Needed Just to Pay Salaries</div>
           <div class="hero-number" id="hero-breakeven">667</div>
-          <div class="hero-subtext" id="hero-subtext">Active paying subscribers needed to cover monthly team burn</div>
+          <div class="hero-subtext" id="hero-subtext">You need this many active users every month so your 300 PKR commission per user covers your total salaries.</div>
         </div>
 
         <div class="stats-pills-row">
           <div class="pill-stat">
-            <span class="caption">Monthly Burn</span>
+            <span class="caption">Total Monthly Salaries</span>
             <span class="value" id="stat-monthly-burn">PKR 200,000</span>
           </div>
           <div class="pill-stat">
-            <span class="caption">Cut / Sub</span>
-            <span class="value">PKR 300 (15%)</span>
+            <span class="caption">Your Cut Per User</span>
+            <span class="value">PKR 300 / mo</span>
           </div>
           <div class="pill-stat">
-            <span class="caption">Payback Period</span>
+            <span class="caption">Months to Get Money Back</span>
             <span class="value" id="stat-payback">Month 10</span>
           </div>
           <div class="pill-stat">
-            <span class="caption">Peak Capital Risk</span>
-            <span class="value" id="stat-drawdown">-PKR 1.2M</span>
+            <span class="caption">Max Cash Spent Out of Pocket</span>
+            <span class="value" id="stat-drawdown">-PKR 12 Lakh</span>
           </div>
         </div>
 
         <div class="chart-container">
           <div class="chart-header">
-            <h3>24-Month Trajectory (Cumulative Cash Flow)</h3>
-            <span class="legend-badge">J-Curve</span>
+            <h3>Total Profit or Loss Over 2 Years</h3>
+            <span class="legend-badge">Red = Loss | Green = Profit</span>
           </div>
           <canvas id="projection-chart" width="800" height="320"></canvas>
         </div>
