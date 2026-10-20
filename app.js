@@ -1,13 +1,17 @@
-const SUB_PRICE = 2000;
+const MONTHLY_PRICE = 2000;
+const YEARLY_PRICE = 20000;
 const COMM_PERCENT = 0.15;
-const COMM_PER_SUB = SUB_PRICE * COMM_PERCENT; // 300 PKR
+
+const MONTHLY_COMM = MONTHLY_PRICE * COMM_PERCENT; // 300 PKR
+const YEARLY_COMM = YEARLY_PRICE * COMM_PERCENT;   // 3000 PKR upfront
 
 let state = {
   model: 'fixed',
   juniorsCount: 4,
   juniorSalary: 25000,
   seniorSalary: 100000,
-  salesPerDay: 1.0,
+  salesPerDay: 2,
+  yearlyMix: 0.20,
   churnRate: 0.08
 };
 
@@ -16,12 +20,14 @@ const dom = {
   juniorSalary: document.getElementById('junior-salary'),
   seniorSalary: document.getElementById('senior-salary'),
   salesPerDay: document.getElementById('sales-per-day'),
+  yearlyMix: document.getElementById('yearly-mix'),
   churnRate: document.getElementById('churn-rate'),
 
   valJuniorsCount: document.getElementById('val-juniors-count'),
   valJuniorSalary: document.getElementById('val-junior-salary'),
   valSeniorSalary: document.getElementById('val-senior-salary'),
   valSalesPerDay: document.getElementById('val-sales-per-day'),
+  valYearlyMix: document.getElementById('val-yearly-mix'),
   valChurnRate: document.getElementById('val-churn-rate'),
   hintMonthlyTotal: document.getElementById('hint-monthly-total'),
 
@@ -52,26 +58,41 @@ function calculateEngine() {
   const effectiveJuniorBase = isHybrid ? 15000 : state.juniorSalary;
   const fixedBurn = (state.juniorsCount * effectiveJuniorBase) + state.seniorSalary;
 
-  // In hybrid, rep gets 75 PKR bonus per active subscriber, partner agency keeps 225 PKR
-  const agencyCommissionPerSub = isHybrid ? (COMM_PER_SUB - 75) : COMM_PER_SUB;
-  const breakEvenSubs = Math.ceil(fixedBurn / agencyCommissionPerSub);
+  // In hybrid, agency shares 25% of commission with the youngsters
+  const netMonthlyComm = isHybrid ? (MONTHLY_COMM - 75) : MONTHLY_COMM;
+  const netYearlyComm = isHybrid ? (YEARLY_COMM - 750) : YEARLY_COMM;
 
-  // 30 days per month basis
-  const monthlyAdditionsPerRep = Math.round(state.salesPerDay * 30);
-  const totalTeamMonthlyAdds = state.juniorsCount * monthlyAdditionsPerRep;
+  const totalMonthlySales = state.juniorsCount * Math.round(state.salesPerDay * 30);
+  const monthlyPlanSales = Math.round(totalMonthlySales * (1 - state.yearlyMix));
+  const yearlyPlanSales = totalMonthlySales - monthlyPlanSales;
 
-  let activeUsers = 0;
+  // Break-even in equivalent monthly subs
+  const breakEvenMonthlySubs = Math.ceil(fixedBurn / netMonthlyComm);
+
+  let activeMonthlyUsers = 0;
+  let yearlyCohorts = new Array(25).fill(0);
   let cumulativeCash = 0;
   let peakDrawdown = 0;
   let paybackMonth = null;
   const monthlyData = [];
 
   for (let m = 1; m <= 24; m++) {
-    const churnLoss = Math.round(activeUsers * state.churnRate);
-    activeUsers = Math.max(0, activeUsers + totalTeamMonthlyAdds - churnLoss);
+    // 1. Monthly Users Flow
+    const monthlyChurnLoss = Math.round(activeMonthlyUsers * state.churnRate);
+    activeMonthlyUsers = Math.max(0, activeMonthlyUsers + monthlyPlanSales - monthlyChurnLoss);
+    const revenueFromMonthly = activeMonthlyUsers * netMonthlyComm;
 
-    const monthlyRevenue = activeUsers * agencyCommissionPerSub;
-    const netMonth = monthlyRevenue - fixedBurn;
+    // 2. Yearly Users Flow (Immediate 3,000 PKR cash per yearly sub)
+    yearlyCohorts[m] = yearlyPlanSales;
+    let renewingYearly = 0;
+    if (m >= 13) {
+      // Annual renewals after 12 months (approx 20% annual churn)
+      renewingYearly = Math.round(yearlyCohorts[m - 12] * 0.80);
+    }
+    const revenueFromYearly = (yearlyPlanSales + renewingYearly) * netYearlyComm;
+
+    const totalRevenue = revenueFromMonthly + revenueFromYearly;
+    const netMonth = totalRevenue - fixedBurn;
     cumulativeCash += netMonth;
 
     if (cumulativeCash < peakDrawdown) {
@@ -84,8 +105,8 @@ function calculateEngine() {
 
     monthlyData.push({
       month: m,
-      activeUsers,
-      monthlyRevenue,
+      activeMonthlyUsers,
+      totalRevenue,
       netMonth,
       cumulativeCash
     });
@@ -93,13 +114,13 @@ function calculateEngine() {
 
   return {
     fixedBurn,
-    breakEvenSubs,
-    totalTeamMonthlyAdds,
+    breakEvenMonthlySubs,
+    totalMonthlySales,
+    yearlyPlanSales,
     paybackMonth,
     peakDrawdown: Math.abs(peakDrawdown),
     monthlyData,
-    month24Profit: monthlyData[23].netMonth,
-    month24Users: monthlyData[23].activeUsers
+    month24Profit: monthlyData[23].netMonth
   };
 }
 
@@ -109,23 +130,24 @@ function renderUI() {
   dom.valJuniorsCount.textContent = `${state.juniorsCount} reps`;
   dom.valJuniorSalary.textContent = state.model === 'hybrid' ? '15,000 + Bonus' : `${Number(state.juniorSalary).toLocaleString()} PKR`;
   dom.valSeniorSalary.textContent = `${Number(state.seniorSalary).toLocaleString()} PKR`;
-  dom.valSalesPerDay.textContent = `${state.salesPerDay.toFixed(1)} sales / day`;
+  dom.valSalesPerDay.textContent = `${state.salesPerDay} sales / day`;
+  dom.valYearlyMix.textContent = `${Math.round(state.yearlyMix * 100)}% Yearly`;
   dom.valChurnRate.textContent = `${Math.round(state.churnRate * 100)}%`;
-  dom.hintMonthlyTotal.textContent = `Team brings ~${result.totalTeamMonthlyAdds} new subscriptions every month`;
+  dom.hintMonthlyTotal.textContent = `Team brings ~${result.totalMonthlySales} new sales/mo (${result.yearlyPlanSales} yearly plans)`;
 
-  dom.heroBreakeven.textContent = result.breakEvenSubs.toLocaleString();
+  dom.heroBreakeven.textContent = result.breakEvenMonthlySubs.toLocaleString();
   dom.statMonthlyBurn.textContent = `PKR ${formatPKR(result.fixedBurn)}`;
   dom.statDrawdown.textContent = `PKR ${formatPKR(result.peakDrawdown)}`;
-  dom.statPayback.textContent = result.paybackMonth ? `Month ${result.paybackMonth}` : 'Month 12+';
+  dom.statPayback.textContent = result.paybackMonth ? `Month ${result.paybackMonth}` : 'Month 1';
 
   if (result.month24Profit > 0) {
     dom.statusTag.textContent = 'High Compounding';
-    dom.chartBadge.textContent = `+PKR ${formatPKR(result.month24Profit)} / month profit`;
-    dom.heroSubtext.textContent = `At ${result.breakEvenSubs} users, payroll is self-funded. By Month 24, you retain ~${result.month24Users.toLocaleString()} users delivering PKR ${formatPKR(result.month24Profit)} clear recurring profit every month.`;
+    dom.chartBadge.textContent = `+PKR ${formatPKR(result.month24Profit)} / mo recurring`;
+    dom.heroSubtext.textContent = `With ${Math.round(state.yearlyMix * 100)}% choosing the 20k yearly plan, you collect PKR 3,000 instantly on each annual sale. Month 24 run-rate hits PKR ${formatPKR(result.month24Profit)}/month profit.`;
   } else {
     dom.statusTag.textContent = 'Ramp Up Needed';
-    dom.chartBadge.textContent = 'Breakeven pending';
-    dom.heroSubtext.textContent = `Increase sales pace or decrease drop-offs to hit the self-sustaining ${result.breakEvenSubs} subscriber target sooner.`;
+    dom.chartBadge.textContent = 'Subsidized';
+    dom.heroSubtext.textContent = `Increase sales pace or yearly ratio to achieve break-even faster.`;
   }
 
   drawMonochromeChart(result.monthlyData);
@@ -163,7 +185,6 @@ function drawMonochromeChart(data) {
     return padLeft + (i / (data.length - 1)) * (width - padLeft - padRight);
   }
 
-  // Draw zero baseline
   const zeroY = getY(0);
   ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
   ctx.lineWidth = 1;
@@ -179,7 +200,7 @@ function drawMonochromeChart(data) {
   ctx.textAlign = 'right';
   ctx.fillText('0 PKR', padLeft - 8, zeroY + 3);
 
-  // Gradient fill under the curve
+  // Gradient fill
   ctx.beginPath();
   ctx.moveTo(getX(0), zeroY);
   data.forEach((d, i) => {
@@ -195,7 +216,7 @@ function drawMonochromeChart(data) {
   ctx.fillStyle = gradient;
   ctx.fill();
 
-  // Solid Crisp White Line
+  // Solid white curve
   ctx.beginPath();
   data.forEach((d, i) => {
     const x = getX(i);
@@ -240,6 +261,10 @@ function bindEvents() {
     state.salesPerDay = Number(e.target.value);
     renderUI();
   });
+  dom.yearlyMix.addEventListener('input', (e) => {
+    state.yearlyMix = Number(e.target.value) / 100;
+    renderUI();
+  });
   dom.churnRate.addEventListener('input', (e) => {
     state.churnRate = Number(e.target.value) / 100;
     renderUI();
@@ -268,17 +293,21 @@ function bindEvents() {
       const preset = btn.dataset.preset;
 
       if (preset === 'steady') {
-        state.salesPerDay = 0.5;
+        state.salesPerDay = 1;
+        state.yearlyMix = 0.10;
         state.churnRate = 0.10;
       } else if (preset === 'target') {
-        state.salesPerDay = 1.0;
+        state.salesPerDay = 5;
+        state.yearlyMix = 0.20;
         state.churnRate = 0.08;
       } else if (preset === 'scale') {
-        state.salesPerDay = 2.0;
+        state.salesPerDay = 25;
+        state.yearlyMix = 0.30;
         state.churnRate = 0.05;
       }
 
       dom.salesPerDay.value = state.salesPerDay;
+      dom.yearlyMix.value = Math.round(state.yearlyMix * 100);
       dom.churnRate.value = Math.round(state.churnRate * 100);
       renderUI();
     });
